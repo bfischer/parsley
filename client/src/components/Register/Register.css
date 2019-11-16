@@ -1,0 +1,30 @@
+.register {
+    width: 100%;
+    height: 100%;
+}
+
+.register__form {
+    margin: auto;
+    width: 30%;
+    min-width: 500px;
+    border: 1px solid #00c0ff;
+    padding: 40px;
+    position: relative;
+    top: 140px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.register__form-register-button {
+    margin-top: 25px;
+    width: 100%;
+}
+
+.register__form-register-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.register__form-margin-input {
+    margin-top: 15px;
+}
