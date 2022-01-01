@@ -1,3 +1,6 @@
+@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap';
+@import 'https://fonts.googleapis.com/icon?family=Material+Icons';
+
 html {
   height: 100%;
 }
@@ -52,15 +55,21 @@ body {
 
 .app__content {
   width: 100%;
-  padding: 16px 40px 24px;
+  padding: 0px 20px 24px;
   font-family: 'Lato';
-  background-color:#d6d6d6
+  background-color: #d6d6d6;
 }
 
 .page-information {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 25px;
+    padding: 18px 25px 15px;
+    background-color: white;
+    border-bottom: 2px solid turquoise;
+    /* border-left: 2px solid turquoise; */
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
 }
 
 .page-information > h1 {

@@ -1,3 +1,19 @@
 .restaurants a {
     text-decoration: none !important;
 }
+
+.restaurants__content {
+    padding: 0 30px;
+}
+
+.restaurants__actions {
+    margin-bottom: 15px;
+}
+
+.restaurants__form-modal-input {
+    margin-bottom: 20px;
+}
+
+.restaurants__table {
+    width: 95%;
+}

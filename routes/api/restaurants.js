@@ -1,24 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator/check');
+const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 
 const User = require('../../models/User');
 const Restaurant = require('../../models/Restaurant');
-
-// @route   GET api/restaurants
-// @desc    Get restaurants for a user
-// @access  Public
-router.get('/', auth, async (req, res) => {
-    try {
-        const user = await Restaurant.findById(req.user.id).select('-password');
-        res.json(user);
-    }
-    catch(err) {
-        console.error(err.message);
-        res.status('Server error in authorization');
-    }
-})
+const Table = require('../../models/Table');
+const MenuItem = require('../../models/MenuItem');
 
 
 // @route   POST api/restaurants
@@ -37,7 +25,8 @@ router.post('/', auth, async (req, res) => {
 
         const restaurant = await newRestaurant.save();
 
-        res.json(restaurant);
+        const restaurants = await Restaurant.find().sort({ name: -1 })
+        res.json(restaurants);
     }
     catch(err) {
         console.error(err.message);
@@ -59,6 +48,7 @@ router.get('/', auth, async (req, res) => {
     }
 })
 
+
 // @route   GET api/restaurants/:id
 // @desc    Get restaurant by ID
 // @access  Private
@@ -75,6 +65,132 @@ router.get('/:id', auth, async (req, res) => {
     catch(err) {
         console.error(err.message);
         res.status('Server error in authorization');
+    }
+})
+
+// @route   DELETE api/restaurants/:id
+// @desc    Delete restaurant by ID
+// @access  Private
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if(!restaurant) {
+            return res.status(401).json({ msg: 'Restaurant not found' });
+        }
+
+        if(restaurant.user.toString() !==  req.user.id) {
+            return res.statusMessage(401).json({msg: 'User not authorized'})
+        }
+
+        await restaurant.remove()
+
+        const restaurants = await Restaurant.find().sort({ name: -1 })
+        res.json(restaurants);
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status('Server error');
+    }
+})
+
+// @route   GET api/restaurants/:id/tables
+// @desc    Get all tables for a retaurant by restaurant ID
+// @access  Private
+router.get('/:id/tables', auth, async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if(!restaurant) {
+            return res.status(401).json({ msg: 'Restaurant not found' });
+        }
+
+        const tables = await Table.find({restaurant});
+
+        res.json(tables);
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status('Server error');
+    }
+})
+
+// @route   POST api/restaurants/:id/tables
+// @desc    Adds a new table for a restaurant
+// @access  Private
+router.post('/:id/tables', auth, async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if(!restaurant) {
+            return res.status(401).json({ msg: 'Restaurant not found' });
+        }
+
+        const newTable = new Table({
+            name: req.body.name,
+            size: req.body.size,
+            restaurant: restaurant,
+            status: 'Ready',
+        });
+
+        await newTable.save();
+        const tables = await Table.find({restaurant});
+
+        res.json(tables);
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status('Server error');
+    }
+})
+
+// @route   GET api/restaurants/:id/menu
+// @desc    Gets the menu for a retaurant by restaurant ID
+// @access  Private
+router.get('/:id/menu', auth, async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if(!restaurant) {
+            return res.status(401).json({ msg: 'Restaurant not found' });
+        }
+
+        const menuItems = await MenuItem.find({restaurant});
+
+        res.json(menuItems);
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status('Server error');
+    }
+})
+
+// @route   POST api/restaurants/:id/tables
+// @desc    Adds a new menu item for a restaurant
+// @access  Private
+router.post('/:id/menu', auth, async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if(!restaurant) {
+            return res.status(401).json({ msg: 'Restaurant not found' });
+        }
+
+        const newMenuItem = new MenuItem({
+            name: req.body.name,
+            type: req.body.type,
+            restaurant: restaurant,
+            price: req.body.price,
+        });
+
+        await newMenuItem.save();
+        const menuItems = await MenuItem.find({restaurant});
+
+        res.json(menuItems);
+    }
+    catch(err) {
+        console.error(err.message);
+        res.status('Server error');
     }
 })
 
